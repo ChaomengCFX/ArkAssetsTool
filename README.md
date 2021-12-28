@@ -1,6 +1,6 @@
 # ArkAssetsTool
 方舟资源自动下载解包
-基于Python3(version>=3.5)  
+基于Python3 (version>=3.5)  
 需要的库：
 - requests
 - pycryptodome
