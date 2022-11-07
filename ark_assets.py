@@ -283,24 +283,42 @@ class ArkAssets:
                                 nonlocal _unpack_count
                                 try:
                                     env = UnityPy.load(str(file_path))
+                                    images = dict()
+                                    for obj in env.objects:
+                                        data = obj.read()
+                                        if obj.type.name in ['Texture2D', 'Sprite']:
+                                            images['({})'.format(obj.type.name) + data.name] = data.image
+                                    _p = file_path.with_name('[unpack]' + file_path.stem)
+                                    for name in images:
+                                        if not name.endswith('[alpha]'):
+                                            if name + '[alpha]' in images:
+                                                r, g, b = images[name].split()[:3]
+                                                a = images[name + '[alpha]'].split()[0]
+                                                if a.size != r.size:
+                                                    a = a.resize(r.size)
+                                                image = PIL.Image.merge('RGBA', (r, g, b, a))
+                                            else:
+                                                image = images[name]
+                                            _p.mkdir(parents=True, exist_ok=True)
+                                            image.save(str(_p / (name + '.png')))
                                     for obj in env.objects:
                                         data = obj.read()
                                         name = obj.type.name
-                                        _p = file_path.with_name('[unpack]' + file_path.stem)
-                                        if name in ['Texture2D', 'Sprite']:
-                                            _p.mkdir(parents=True, exist_ok=True)
-                                            data.image.save(str(_p / (data.name + '.png')))
-                                        elif name == 'TextAsset':
+                                        if name == 'TextAsset':
                                             _p.mkdir(parents=True, exist_ok=True)
                                             try:
-                                                de = ArkAssets.text_asset_decrypt(bytes(data.script), re.search('gamedata.levels', str(_p)) == None)
+                                                fpath = str(file_path)
+                                                if 'gamedata/levels' in fpath and 'enemydata' not in fpath:
+                                                    de = bytes(data.script)[128:]
+                                                else:
+                                                    de = ArkAssets.text_asset_decrypt(bytes(data.script), 'gamedata/levels' not in fpath)
                                             except:
                                                 de = bytes(data.script)
                                             try:
                                                 json_data = json.dumps(json.loads(de), ensure_ascii=False, indent=2)
                                                 with open(str(_p / (data.name + '.json')), 'w', encoding='utf-8') as f:
                                                     f.write(json_data)
-                                                    f.close()                
+                                                    f.close()
                                             except:
                                                 try:
                                                     dics = bson.decode_all(de)
@@ -333,8 +351,8 @@ class ArkAssets:
                                                     with open(str(_p / (data.name + extension)), "wb") as f:
                                                         f.write(data.m_FontData)
                                                         f.close()
-                                except:
-                                    pass
+                                except Exception as e:
+                                    pass#print(e)
                                 finally:
                                     _unpack_count += 1
                                     unpackbar.update(1)
