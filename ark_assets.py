@@ -43,7 +43,7 @@ def scale(n, size: int or float = 1024, digit: int = 2, unit: list[str] = ['B', 
 
 class ArkAssets:
 
-    CHAT_MASK = 'UITpAi82pHAWwnzqHRMCwPonJLIB3WCl'
+    CHAT_MASK = bytes.fromhex('554954704169383270484157776e7a7148524d4377506f6e4a4c49423357436c').decode()
     
     class Servers(Enum):
         OFFICAL = 0
