@@ -308,7 +308,7 @@ class ArkAssets:
                                             _p.mkdir(parents=True, exist_ok=True)
                                             try:
                                                 fpath = str(file_path)
-                                                if 'gamedata/levels' in fpath and 'enemydata' not in fpath:
+                                                if ('gamedata\levels' in fpath or 'gamedata/levels' in fpath) and 'enemydata' not in fpath:
                                                     de = bytes(data.script)[128:]
                                                 else:
                                                     de = ArkAssets.text_asset_decrypt(bytes(data.script), 'gamedata/levels' not in fpath)
