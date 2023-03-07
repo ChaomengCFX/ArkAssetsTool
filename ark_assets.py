@@ -6,6 +6,7 @@ import random
 import re
 import requests
 import sys
+import shutil
 import threading
 import time
 import UnityPy
@@ -15,6 +16,7 @@ from enum import Enum
 from io import BytesIO
 from pathlib import Path
 from tqdm import tqdm
+
 
 def printc(*string: str, color: list[int] or list[list[int]] = list(), sep: str = ' ', start: str = '', end: str = '\n', show_time: bool = True, log = print) -> None:
     log(start + ('\033[1;30m[{}]\033[0m '.format(time.strftime('%H:%M:%S')) if show_time else '') +
@@ -233,7 +235,7 @@ class ArkAssets:
                         if _file_path.is_file():
                             os.remove(str(_file_path))
                         if _file_path.with_name(_file_path.stem).is_dir():
-                            os.removedirs(str(_file_path.with_name('[unpack]' + _file_path.stem)))
+                            shutil.rmtree(str(_file_path.with_name('[unpack]' + _file_path.stem)), ignore_errors=True)
                         files[i] = l[i]
                 else:
                     files[i] = l[i]
